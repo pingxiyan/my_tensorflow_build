@@ -6,7 +6,6 @@ So far, I can't build sucessfully based on source code. <br>
 Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
        https://gist.github.com/kmhofmann/e368a2ebba05f807fa1a90b3bf9a1e03 <br>
 
-	```
 	if tip: JDK not found, please set $JAVA_HOME.
 	sudo apt-get install build-essential openjdk-8-jdk python zip unzip
 	
@@ -16,12 +15,11 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 	$ echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
 	$ curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
 	$ sudo apt-get update && sudo apt-get install bazel
-	```
 
 ## Apt install Tensorflow
 
-*** Scrpt: ***
-	```
+**Scrpt:**
+
 	$ pip install tensorflow-gpu		// GPU=TX1080, CUDA=9.0, cdDNN=7.4
 	$ python
 	>>> import tensorflow as tf
@@ -31,7 +29,7 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 
 ## Train mnist
 #### Train
-	```
+
 	$ git clone https://github.com/tensorflow/models.git
 	$ export PYTHONPATH=$PYTHONPATH:`pwd`/models/
 	$ cd models/official/mnist
@@ -48,7 +46,8 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 	+  mnist_data_root_path='models/official/mnist/mnist_data/'
 	+  copyfile(mnist_data_root_path+filename+'.gz', zipped_filepath)
 
-	*** Result: ***
+**Result:**
+
 	$ cd /tmp/mnist_model/
 	$ ll
 	checkpoint                                  model.ckpt-22800.data-00000-of-00001
@@ -62,9 +61,8 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 	model.ckpt-22200.index                      model.ckpt-24000.meta
 	model.ckpt-22200.meta
 
-	```
 #### Test
-	```
+
 	$ export PYTHONPATH=$PYTHONPATH:`pwd`/models/
 	$ python mnist_test.py
-	```
+
