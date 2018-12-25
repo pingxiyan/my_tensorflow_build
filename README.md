@@ -16,6 +16,29 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 	$ curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
 	$ sudo apt-get update && sudo apt-get install bazel
 
+## cpp version
+
+	$ sudo apt-get install openjdk-8-jdk
+	$ echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
+	$ curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
+	$ sudo apt-get update && sudo apt-get install bazel
+
+	$ sudo apt-get upgrade bazel
+	$ cd tensorflow/
+	$ ./configure 
+	$ bazel build //tensorflow:libtensorflow_cc.so -j 20
+
+	**You will see:**
+	$ cd bazel-bin/tensorflow
+	$ ls
+	libtensorflow_cc.so*
+	libtensorflow_cc.so-2.params*
+	libtensorflow_cc.so.runfiles/
+	libtensorflow_cc.so.runfiles_manifest*
+	libtensorflow_framework.so*
+	libtensorflow_framework.so-2.params*
+
+
 ## Apt install Tensorflow
 
 **Scrpt:**

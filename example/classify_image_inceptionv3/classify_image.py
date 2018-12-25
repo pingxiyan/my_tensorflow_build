@@ -196,7 +196,7 @@ def maybe_download_and_extract():
 
 def main(_):
   maybe_download_and_extract()
-  # download files will be put:
+  # download files will be putted:
   # /tmp/imagenet/classify_image_graph_def.pb
   # /tmp/imagenet/cropped_panda.jpg
   # /tmp/imagenet/imagenet_2012_challenge_label_map_proto.pbtxt
