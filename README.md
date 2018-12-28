@@ -23,7 +23,7 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 	$ curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
 	$ sudo apt-get update && sudo apt-get install bazel
 
-	$ sudo apt-get upgrade bazel
+	$ sudo apt-get upgrade bazel # this will upgrade Ubuntu OS, could not to do.
 	$ cd tensorflow/
 	$ ./configure 
 	$ bazel build //tensorflow:libtensorflow_cc.so -j 20
