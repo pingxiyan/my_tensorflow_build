@@ -1,5 +1,9 @@
 # How to build
 
+## Nvidia cud
+	1.install cuda
+	2.install cudnn: https://developer.nvidia.com/rdp/cudnn-download
+
 ## Source code compile Tensorflow
 
 So far, I can't build sucessfully based on source code. <br>
