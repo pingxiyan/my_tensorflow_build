@@ -33,6 +33,7 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 	$ bazel build //tensorflow:libtensorflow_cc.so -j 20
 
 **You will see:**
+
 	$ cd bazel-bin/tensorflow
 	$ ls
 	libtensorflow_cc.so*
