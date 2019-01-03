@@ -8,6 +8,8 @@ find_package(OpenCV)
 find_package (Eigen3)
 
 include_directories(include/third_party
+	include/
+	include/third_party/eigen3/
 	${OpenCV_INCLUDE_DIRS}
 	)
 
