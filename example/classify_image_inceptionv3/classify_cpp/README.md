@@ -11,4 +11,8 @@
 	$ sudo apt install libeigen3-dev
 # Copy headers and libraries
 
-	$ 
+	$ mkdir -p include/third_party
+	$ mkdir lib
+	
+	$ cp ~/opensource/tensorflow/tensorflow/examples/label_image/main.cc ./
+	$ cp 
