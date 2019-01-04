@@ -10,6 +10,8 @@ find_package (Eigen3)
 include_directories(include/third_party
 	include/
 	include/third_party/eigen3/
+	include/third_party/downloads/absl
+	include/third_party/downloads/protobuf/src/
 	${OpenCV_INCLUDE_DIRS}
 	)
 
@@ -22,6 +24,7 @@ add_executable (${TARGET_NAME}
     )
 
 target_link_libraries (${TARGET_NAME}
+	dl
 	${OpenCV_LIBS}
 	libpthread.so
 	libtensorflow_cc.so

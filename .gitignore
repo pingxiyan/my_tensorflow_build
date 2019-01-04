@@ -2,3 +2,7 @@ example/mnist/.idea
 example/mnist/mnist_data
 example/.idea/
 example/classify_image_inceptionv3/classify_cpp/build
+example/classify_image_inceptionv3/classify_cpp_test/
+example/classify_image_inceptionv3/classify_cpp_test/include
+example/classify_image_inceptionv3/classify_cpp/
+example/classify_image_inceptionv3/classify_cpp_eclipse

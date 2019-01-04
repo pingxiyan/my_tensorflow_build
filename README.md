@@ -20,7 +20,7 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 	$ curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
 	$ sudo apt-get update && sudo apt-get install bazel
 
-## cpp version
+## cpp version source code compile Tensorflow
 
 	$ sudo apt-get install openjdk-8-jdk
 	$ echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
@@ -43,6 +43,26 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 	libtensorflow_framework.so*
 	libtensorflow_framework.so-2.params*
 
+## cpp version compile Tensorflow test classify
+
+	$ cd tensorflow
+	$ wget "https://storage.googleapis.com/download.tensorflow.org/models/inception_v3_2016_08_28_frozen.pb.tar.gz"
+	$ copy inception_v3_2016_08_28_frozen.pb.tar.gz tensorflow/examples/label_image/data/
+	$ cd tensorflow/examples/label_image/data/
+	$ tar -xf inception_v3_2016_08_28_frozen.pb.tar.gz
+	$ cd -
+	remove last python part, in the file "tensorflow/examples/label_image/BUILD"
+	$ bazel build tensorflow/examples/label_image/...
+
+	$ ./bazel-bin/tensorflow/examples/label_image/label_image
+
+```
+2019-01-04 14:43:26.276844: I tensorflow/examples/label_image/main.cc:251] military uniform (653): 0.834305
+2019-01-04 14:43:26.276895: I tensorflow/examples/label_image/main.cc:251] mortarboard (668): 0.0218696
+2019-01-04 14:43:26.276911: I tensorflow/examples/label_image/main.cc:251] academic gown (401): 0.0103581
+2019-01-04 14:43:26.276923: I tensorflow/examples/label_image/main.cc:251] pickelhaube (716): 0.00800825
+2019-01-04 14:43:26.276938: I tensorflow/examples/label_image/main.cc:251] bulletproof vest (466): 0.00535093
+```
 
 ## Apt install Tensorflow
 
