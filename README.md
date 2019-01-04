@@ -51,9 +51,10 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 	$ cd tensorflow/examples/label_image/data/
 	$ tar -xf inception_v3_2016_08_28_frozen.pb.tar.gz
 	$ cd -
-	remove last python part, in the file "tensorflow/examples/label_image/BUILD"
+	
+**remove last python part, in the file "tensorflow/examples/label_image/BUILD"**
+	
 	$ bazel build tensorflow/examples/label_image/...
-
 	$ ./bazel-bin/tensorflow/examples/label_image/label_image
 
 ```
