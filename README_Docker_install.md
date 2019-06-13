@@ -104,7 +104,10 @@
 	$ docker image rm hello-world	# delete a docker image.
 	$ docker container ls --all		# check all containers
 	$ docker container stop $(container id)	# stop a container
-	$ docker container rm $(container id) 
+	$ docker container rm $(container id) 	# delete container
+
+	$ docker ps -l 		# check all docker process = docker container ls --all	
+	$ docker commit [container id] [new container name] 	# Save your modification to new container. 
 
 
 
