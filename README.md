@@ -67,6 +67,8 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 
 ## Apt install Tensorflow
 
+The tensorflow which is installed by apt dependency nvidia driver version and some dependencies. It is easy to fail. So using docker tensorflow is recommanded.
+
 **Scrpt:**
 
 	$ pip install tensorflow-gpu		// GPU=TX1080, CUDA=9.0, cdDNN=7.4
@@ -76,6 +78,13 @@ Refer: http://www.tensorfly.cn/tfdoc/get_started/os_setup.html	<br>
 	>>> tf.add(10,2).numpy()
 	12
 
+#### Python3 tensoflow apt install
+
+	$ pip3 install tensorflow-gpu
+	
+	Successfully installed absl-py-0.7.1 astor-0.7.1 gast-0.2.2 grpcio-1.21.1 h5py-2.9.0 keras-applications-1.0.8 keras-preprocessing-1.1.0 markdown-3.1.1 mock-3.0.5 numpy-1.16.2 protobuf-3.7.0 setuptools-41.0.1 six-1.12.0 tensorboard-1.13.1 tensorflow-estimator-1.13.0 tensorflow-gpu-1.13.1 termcolor-1.1.0 werkzeug-0.14.1 wheel-0.33.4
+
+	
 ## Train mnist
 #### Train
 
