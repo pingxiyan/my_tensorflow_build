@@ -109,7 +109,4 @@
 	$ docker ps -l 		# check all docker process = docker container ls --all	
 	$ docker commit [container id] [new container name] 	# Save your modification to new container. 
 
-
-
-
-
+	$ docker exec -it [container id] bash		# Open multiple terminals in same docker.
