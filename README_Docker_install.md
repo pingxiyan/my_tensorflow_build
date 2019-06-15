@@ -97,6 +97,14 @@
 	--rm: stop and exit, rm container
 	--network host: using host's network, but proxy must be set in docker again.
 
+	tensorflow's some dependencies
+	$ pip install opencv-python
+	$ apt-get install libglib2.0-0
+	$ apt-get install libsm6
+	$ apt-get install libxrender1
+	$ apt-get install -y python-qt4
+	$ pip install matplotlib
+
 
 #### Common docker command 
 
