@@ -83,8 +83,9 @@
 			docker run --runtime=nvidia --rm nvidia/cuda:9.0-base nvidia-smi
 
 	2. install tersorflow 
-		$ docker pull tensorflow/Tensorflow 			# latest stable version.
+		$ docker pull tensorflow/Tensorflow 			# latest stable version. default cpu version
 		$ docker pull tensorflow/tensorflow:1.13.1-gpu 	# specific version.
+		$ docker pull tensorflow/tensorflow:1.13.1-gpu-py3
 
 #### Start tensorflow in docker
 
@@ -92,6 +93,9 @@
 
 	map a local path to docker
 	$ docker run --rm --network host -v [local path]:[docker path] -it tensorflow/tensorflow bash
+	# Start GPU version
+	$ docker run --rm --runtime=nvidia --network host -v [local path]:[docker path] -it tensorflow/tensorflow bash
+	
 
 	Some parameters
 	--rm: stop and exit, rm container
@@ -103,8 +107,7 @@
 	$ apt-get install libsm6
 	$ apt-get install libxrender1
 	$ apt-get install -y python-qt4
-	$ pip install matplotlib
-
+	$ apt-get install python-matplotlib
 
 #### Common docker command 
 
