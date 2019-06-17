@@ -1,4 +1,5 @@
 # Install tenforflow based on docker
+Learn tensorflow, recommand refer: /tensorflow_learn/example/mnist/keras_method/mnist_lenet.py
 
 #### install docker on Ubuntu.
 
@@ -95,7 +96,7 @@
 	$ docker run --rm --network host -v [local path]:[docker path] -it tensorflow/tensorflow bash
 	# Start GPU version
 	$ docker run --rm --runtime=nvidia --network host -v [local path]:[docker path] -it tensorflow/tensorflow bash
-	
+	$ docker run --rm --network host --runtime=nvidia -it -v ~/mydisk2/mygithub/tensorflow_learn:/tensorflow_learn [container] bash
 
 	Some parameters
 	--rm: stop and exit, rm container

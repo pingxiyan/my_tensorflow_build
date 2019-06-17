@@ -176,8 +176,8 @@ def train_mnist_by_subclassing():
     # print("train_data.shape =", train_data.shape)
     # print("train_labels.shape =", train_labels.shape)
 
-    train_data = np.random.random((1000, 28, 28, 1))
-    train_labels = np.random.random((1000, 10))
+    # train_data = np.random.random((1000, 28, 28, 1))
+    # train_labels = np.random.random((1000, 10))
     
     # The compile step specifies the training configuration.
     model.compile(optimizer=tf.train.GradientDescentOptimizer(0.001),
@@ -186,7 +186,7 @@ def train_mnist_by_subclassing():
                   # validation_data=(test_data, test_labels))
 
     # Trains for 5 epochs.
-    model.fit(train_data, train_labels, batch_size=32, epochs=5)
+    model.fit(train_data, train_labels, batch_size=1024, epochs=5)
     model.summary()
     rslt = model.evaluate(test_data, test_labels, batch_size=32)
     print('rslt =', rslt)
@@ -204,6 +204,7 @@ def train_mnist_by_subclassing():
     new_model.load_weights(model_name)
     rslt = model.evaluate(test_data, test_labels, batch_size=32)
     print('rslt =', rslt)
+    print("Train finish")
     
 from tensorflow.python.client import device_lib
 if __name__ == "__main__":
@@ -213,3 +214,4 @@ if __name__ == "__main__":
 
     # train_sequential_model()
     train_mnist_by_subclassing()
+    print("Eixt main")
