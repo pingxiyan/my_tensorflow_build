@@ -8,12 +8,9 @@ import cv2 as cv
 
 from segmentation_models import Unet
 
-# # import segmentation_models.unet as unet
-# # from segmentation_models.unet import Unet
+def main():
+	print("==============")
+	model = Unet('mobilenetv2', classes=2, activation='softmax')
 
-# def main():
-# 	print("==============")
-# 	# model = unet()
-
-# if __name__ == '__main__':
-# 	main()
+if __name__ == '__main__':
+	main()
