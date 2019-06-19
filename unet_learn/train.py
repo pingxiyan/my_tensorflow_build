@@ -28,8 +28,8 @@ def get_data(imgDir):
 	print("Start load images ...")
 	total_num = len(img_files)
 	for idx, fn in enumerate(img_files):
-		# if idx > 200:
-		# 	break
+		if idx > 2000:
+			break
 		print("load progress = [", total_num, ",", idx, "]")
 		img = cv2.imread(img_path + "/" + fn)
 		if img is None:
@@ -65,21 +65,24 @@ def main():
 
 	# print(train_data.shape)
 	# print(mask_data.shape)
+	# print(mask_data[0])
+	# cv2.imwrite("xx.bmp", mask_data[1]*255)
 	# exit(0)
 
 	print("================================")
 	BACKBONE = 'mobilenetv2'
 	# define model
-	model = Unet(BACKBONE, classes=2, 
+	model = Unet(BACKBONE, classes=1, 
 		input_shape=(None, None, 3),
-		activation='softmax', 
+		activation='sigmoid', #sigmoid,softmax
 		encoder_weights='imagenet')
 
 	model.summary()
 
-	#model.compile('Adam', loss=bce_jaccard_loss, metrics=[iou_score])
+	model.compile('Adam', loss='jaccard_loss', metrics=['iou_score'])
 	# model.compile('SGD', loss="bce_dice_loss", metrics=["dice_score"])
-	model.compile('SGD', loss="bce_jaccard_loss", metrics=["iou_score"])
+	# model.compile('SGD', loss="bce_jaccard_loss", metrics=["iou_score"])
+	# model.compile('adam', loss="binary_crossentropy", metrics=["iou_score"])
 	
 	print("================================")
 	print("Start train...")
@@ -89,7 +92,7 @@ def main():
 	model.fit(
 	    x=train_data,
 	    y=mask_data,
-	    batch_size=32,
+	    batch_size=4,
 	    epochs=100,
 	    # validation_data=(x_val, y_val),
 	)
