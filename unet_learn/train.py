@@ -28,8 +28,8 @@ def get_data(imgDir):
 	print("Start load images ...")
 	total_num = len(img_files)
 	for idx, fn in enumerate(img_files):
-		if idx > 8000:
-			break
+		# if idx > 200:
+		# 	break
 		print("load progress = [", total_num, ",", idx, "]")
 		img = cv2.imread(img_path + "/" + fn)
 		if img is None:
@@ -41,8 +41,16 @@ def get_data(imgDir):
 			continue
 		mask=mask.reshape(mask.shape[0],mask.shape[1],1)
 
-		img=cv2.resize(img, (224,224))/255.0
-		mask=cv2.resize(mask, (224,224)).reshape(224,224,1)/255.0
+		img=cv2.resize(img, (224,224))
+		mask=cv2.resize(mask, (224,224)).reshape(224,224,1)
+		mask=mask>128
+
+		img = img.astype('float32')/255.0
+		mask = mask.astype('float32')
+
+		# print(mask.shape)
+		# cv2.imwrite("xx.png", mask)
+		# exit(0)
 
 		train_data.append(img)
 		mask_data.append(mask)
@@ -67,8 +75,11 @@ def main():
 		activation='softmax', 
 		encoder_weights='imagenet')
 
-	model.compile('Adam', loss=bce_jaccard_loss, metrics=[iou_score])
+	model.summary()
 
+	#model.compile('Adam', loss=bce_jaccard_loss, metrics=[iou_score])
+	# model.compile('SGD', loss="bce_dice_loss", metrics=["dice_score"])
+	model.compile('SGD', loss="bce_jaccard_loss", metrics=["iou_score"])
 	
 	print("================================")
 	print("Start train...")
@@ -78,10 +89,13 @@ def main():
 	model.fit(
 	    x=train_data,
 	    y=mask_data,
-	    batch_size=256,
+	    batch_size=32,
 	    epochs=100,
 	    # validation_data=(x_val, y_val),
 	)
+
+	model.save("person_segment_unet_moblienetv2.h5")
+    # new_model=tf.keras.models.load_model("person_segment_unet_moblienetv2.h5")
 
 if __name__ == '__main__':
 	main()
