@@ -3,6 +3,7 @@ Learn how to use tensorflow, train, deploy and so on.
 
 #### 1_install_tf
 Install tensorflow, 
+
 | Install way 	| validation 	|
 | ------------- |:-------------:|
 | docker 		| pass 			|
