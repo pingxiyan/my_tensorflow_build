@@ -30,7 +30,8 @@ Learn tensorflow, recommand refer: /tensorflow_learn/example/mnist/keras_method/
 	$ sudo apt-get purge docker-ce
 	$ sudo rm -rf /var/lib/docker
 
-**Note:Proxy set**
+	If you can't pull docker project, you maybe need to setprox as follow.
+**Note:Proxy set** 
 
 	1.	Create a systemd drop-in directory for the docker service:
 	$ sudo mkdir -p /etc/systemd/system/docker.service.d
@@ -84,7 +85,7 @@ Learn tensorflow, recommand refer: /tensorflow_learn/example/mnist/keras_method/
 			docker run --runtime=nvidia --rm nvidia/cuda:9.0-base nvidia-smi
 
 	2. install tersorflow 
-		$ docker pull tensorflow/Tensorflow 			# latest stable version. default cpu version
+		$ docker pull tensorflow/tensorflow 			# latest stable version. default cpu version, don't need to install nvidia docker.
 		$ docker pull tensorflow/tensorflow:1.13.1-gpu 	# specific version.
 		$ docker pull tensorflow/tensorflow:1.13.1-gpu-py3
 
