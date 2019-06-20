@@ -1,9 +1,6 @@
 # Install tenforflow based on docker
 Learn tensorflow, recommand refer: /tensorflow_learn/example/mnist/keras_method/mnist_lenet.py
 
-	Set pip mirror source to China. improve pip install speed.
-	$ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-
 #### install docker on Ubuntu.
 
 	Uninstall older docker

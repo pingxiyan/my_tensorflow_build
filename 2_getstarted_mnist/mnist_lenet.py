@@ -3,6 +3,12 @@ import  numpy as np
 
 import cv2 as cv
 
+# TensorBoard for visulizing learning status.
+# Step1: set callback for model.fit(), save log to log_path
+# Step2: Based on log_path, show result in TensorBoard.
+# from keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import TensorBoard
+
 # Seqential Model
 def get_sequential_model():
     model = tf.keras.models.Sequential()
@@ -137,8 +143,8 @@ def train_sequential_model():
 
     (train_data, train_labels), (test_data, test_labels) = download_mnist()
 
-    train_data = np.random.random((1000, 28, 28, 1))
-    train_labels = np.random.random((1000, 10))
+    # train_data = np.random.random((1000, 28, 28, 1))
+    # train_labels = np.random.random((1000, 10))
 
     # model.compile(optimizer='adam',
     #               loss='sparse_categorical_crossentropy',
@@ -168,8 +174,8 @@ def train_sequential_model():
 
 # Easy to train.
 def train_mnist_by_subclassing():
-    tf.debugging.set_log_device_placement = True
-    tf.device("/GPU:0")
+    # tf.debugging.set_log_device_placement = True
+    # tf.device("/GPU:0")
     model=MyLenet()
 
     (train_data, train_labels), (test_data, test_labels) = download_mnist()
@@ -186,7 +192,10 @@ def train_mnist_by_subclassing():
                   # validation_data=(test_data, test_labels))
 
     # Trains for 5 epochs.
-    model.fit(train_data, train_labels, batch_size=1024, epochs=5)
+    # Maybe batch_size=1024, CPU, result in non-convergence.
+    model.fit(train_data, train_labels, batch_size=32, epochs=5,
+        callbacks=[TensorBoard(log_dir="./lenet_tensorboard")])
+
     model.summary()
     rslt = model.evaluate(test_data, test_labels, batch_size=32)
     print('rslt =', rslt)

@@ -1,8 +1,22 @@
 # mnist common classify
 #### keras method
 
-	$ cd mnist/keras_method/
-	$ python2 ./keras/mnist_lenet.py
+    Refer: mnist_lenet.py
+    If you like to visulizing leaning, please install keras before training.
+    $ pip install keras
+
+	$ python mnist_lenet.py
+
+**TensorBoard visulizing**
+
+Step 1: Set callback for model.fit(), save log to log_path              <br>
+Step 2: Train your model, and then middle result save to log_path       <br>
+Step 3: Run tensorboard --logdir="full_path of log_path", show as follow    <br>
+    
+    $ tensorboard --logdir=[full_path of log_path]
+    TensorBoard 1.13.1 at http://hddl-xpwork:6006 (Press CTRL+C to quit)
+
+Step 4: In your explore, input: http://hddl-xpwork:6006, if not show, modify to: localhost:6006 <br>
 
 #### Slim method classify
     
