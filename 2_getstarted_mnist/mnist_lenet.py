@@ -4,9 +4,12 @@ import  numpy as np
 import cv2 as cv
 
 # TensorBoard for visulizing learning status.
-# Step1: set callback for model.fit(), save log to log_path
-# Step2: Based on log_path, show result in TensorBoard.
-# from keras.callbacks import TensorBoard
+# Step 1: Set callback for model.fit(), save log to log_path              <br>
+# Step 2: Train your model, and then middle result save to log_path       <br>
+# Step 3: Run tensorboard --logdir="full_path of log_path", show as follow    <br>
+#     $ tensorboard --logdir=[full_path of log_path]
+#     TensorBoard 1.13.1 at http://hddl-xpwork:6006 (Press CTRL+C to quit)
+# Step 4: In your explore, input: http://hddl-xpwork:6006, if not show, modify to: localhost:6006 <br>
 from tensorflow.keras.callbacks import TensorBoard
 
 # Seqential Model

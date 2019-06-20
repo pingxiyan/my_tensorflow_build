@@ -11,6 +11,8 @@ from segmentation_models.backbones import get_preprocessing
 from segmentation_models.losses import bce_jaccard_loss
 from segmentation_models.metrics import iou_score
 
+from tensorflow.keras.callbacks import TensorBoard
+
 import os
 def get_data(imgDir):
 	img_path = imgDir + "/images"
@@ -90,11 +92,12 @@ def main():
 	# if you use data generator use model.fit_generator(...) instead of model.fit(...)
 	# more about `fit_generator` here: https://keras.io/models/sequential/#fit_generator
 	model.fit(
-	    x=train_data,
-	    y=mask_data,
-	    batch_size=4,
-	    epochs=100,
-	    # validation_data=(x_val, y_val),
+		x=train_data,
+		y=mask_data,
+		batch_size=32,
+		epochs=200,
+		# validation_data=(x_val, y_val),
+		callbacks=[TensorBoard(log_dir="./unet_mobilenetv2_tensorboard")]
 	)
 
 	model.save("person_segment_unet_moblienetv2.h5")
