@@ -11,6 +11,7 @@ import cv2 as cv
 #     TensorBoard 1.13.1 at http://hddl-xpwork:6006 (Press CTRL+C to quit)
 # Step 4: In your explore, input: http://hddl-xpwork:6006, if not show, modify to: localhost:6006 <br>
 from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import ModelCheckpoint
 
 # Seqential Model
 def get_sequential_model():
@@ -18,6 +19,7 @@ def get_sequential_model():
     model.add(tf.keras.layers.Conv2D(filters=6, 
             kernel_size=(5, 5),strides=(1,1), padding='SAME', 
             data_format='channels_last', # channels_first=nchw, channels_last=nhwc;
+            input_shape=(28,28,1), # have inference to save model.
             activation='relu'))
     model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2), strides=(2,2)))
     model.add(tf.keras.layers.Conv2D(filters=16, 
@@ -47,6 +49,7 @@ class MyLenet(tf.keras.Model):
         self.conv1=tf.keras.layers.Conv2D(filters=6, 
             kernel_size=(5, 5),strides=(1,1), padding='SAME', 
             data_format='channels_last', # channels_first=nchw, channels_last=nhwc;
+            input_shape=(28,28,1), # have inference to save model.
             activation='relu')
         self.conv2=tf.keras.layers.Conv2D(filters=16, 
             kernel_size=(5, 5),strides=(1,1), padding='VALID', 
@@ -145,9 +148,10 @@ def train_sequential_model():
     model = get_sequential_model()
 
     (train_data, train_labels), (test_data, test_labels) = download_mnist()
-
-    # train_data = np.random.random((1000, 28, 28, 1))
-    # train_labels = np.random.random((1000, 10))
+    # train_data = np.random.random((6000, 28, 28, 1))
+    # train_labels = np.random.random((6000, 10))
+    # test_data = np.random.random((1000, 28, 28, 1))
+    # test_labels = np.random.random((1000, 10))
 
     # model.compile(optimizer='adam',
     #               loss='sparse_categorical_crossentropy',
@@ -156,24 +160,38 @@ def train_sequential_model():
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
 
-    # Train
-    model.fit(train_data, train_labels, batch_size=32, epochs=5)
-    model.summary()
-    # Predict
-    model.evaluate(test_data, test_labels)
+    # checkpointer = ModelCheckpoint(filepath="./weights.hdf5", verbose=1, save_best_only=True)
 
-    print("Verify save json weights: =================")
+    # Train
+    model.fit(train_data, train_labels, batch_size=32, epochs=5,
+        validation_data=(test_data, test_labels),
+        callbacks=[TensorBoard(log_dir="./lenet_tensorboard")])
+
+    # model.summary()
+
+    # Predict
+    rslt=model.evaluate(test_data, test_labels)
+    print('*1****rslt =', rslt)
+
+    print("Verify save json weights: ")
+    print("=========================")
     save_model_json_weight(model, "my_sequential_model")
     new_model = load_model_json_weight(model, "my_sequential_model")
     new_model.compile(optimizer=tf.train.GradientDescentOptimizer(0.001),
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
-    new_model.evaluate(test_data, test_labels)
+    rslt=new_model.evaluate(test_data, test_labels)
+    print('*2****rslt =', rslt)
 
-    print("Verify save whole model: =================")
+    print("Verify save whole model: ")
+    print("=========================")
     save_whole_model(model, "my_whole_model")
     new_model2 = load_whole_model("my_whole_model")
-    new_model.evaluate(test_data, test_labels)
+    new_model2.compile(optimizer=tf.train.GradientDescentOptimizer(0.001),
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+    rslt=new_model2.evaluate(test_data, test_labels)
+    print('*3****rslt =', rslt)
 
 # Easy to train.
 def train_mnist_by_subclassing():
@@ -182,26 +200,29 @@ def train_mnist_by_subclassing():
     model=MyLenet()
 
     (train_data, train_labels), (test_data, test_labels) = download_mnist()
-    # print("train_data.shape =", train_data.shape)
-    # print("train_labels.shape =", train_labels.shape)
+    # train_data = np.random.random((6000, 28, 28, 1))
+    # train_labels = np.random.random((6000, 10))
+    # test_data = np.random.random((1000, 28, 28, 1))
+    # test_labels = np.random.random((1000, 10))
 
-    # train_data = np.random.random((1000, 28, 28, 1))
-    # train_labels = np.random.random((1000, 10))
-    
     # The compile step specifies the training configuration.
     model.compile(optimizer=tf.train.GradientDescentOptimizer(0.001),
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
                   # validation_data=(test_data, test_labels))
 
+    # subclass tip error:'Currently `save` requires model to be a graph network
+    checkpointer = ModelCheckpoint(filepath="./weights.hdf5", verbose=1, save_best_only=True)
+
     # Trains for 5 epochs.
     # Maybe batch_size=1024, CPU, result in non-convergence.
     model.fit(train_data, train_labels, batch_size=32, epochs=5,
+        validation_data=(test_data, test_labels),
         callbacks=[TensorBoard(log_dir="./lenet_tensorboard")])
 
     model.summary()
     rslt = model.evaluate(test_data, test_labels, batch_size=32)
-    print('rslt =', rslt)
+    print('*1****rslt =', rslt)
 
     print("Subclassing only save model like this")
     print("=====================================")
@@ -215,7 +236,7 @@ def train_mnist_by_subclassing():
     new_model.fit(train_data[:1], train_labels[:1])
     new_model.load_weights(model_name)
     rslt = model.evaluate(test_data, test_labels, batch_size=32)
-    print('rslt =', rslt)
+    print('*2****rslt =', rslt)
     print("Train finish")
     
 from tensorflow.python.client import device_lib
