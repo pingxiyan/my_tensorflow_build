@@ -238,6 +238,35 @@ def train_mnist_by_subclassing():
     rslt = model.evaluate(test_data, test_labels, batch_size=32)
     print('*2****rslt =', rslt)
     print("Train finish")
+
+import cv2
+def test_image():
+    new_model=MyLenet()
+    new_model.compile(optimizer=tf.train.GradientDescentOptimizer(0.001),
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+
+    (train_data, train_labels), (test_data, test_labels) = download_mnist()
+    new_model.fit(train_data[:1], train_labels[:1])
+
+    model_name = "my_subclassing_model.h5" 
+    new_model.load_weights(model_name)
+
+    test_num = 3
+    for i in range(test_num):
+        fn="test"+str(i)+".png"
+        print("test:", i, ",", fn)
+
+        print("real label =", np.argmax(train_labels[i]), end=' ')
+        cv2.imwrite(fn, train_data[i]*255)
+        img = cv2.imread(fn, 0)
+        rsz = cv2.resize(img, (28,28));
+        rsz = rsz.reshape(28,28,1)/255.0
+        rsz = rsz.reshape(1,28,28,1)
+
+        # print(rsz.shape)
+        rslt = new_model.predict(rsz)
+        print("predict label =", np.argmax(rslt))
     
 from tensorflow.python.client import device_lib
 if __name__ == "__main__":
@@ -246,5 +275,6 @@ if __name__ == "__main__":
     print("========================================")
 
     # train_sequential_model()
-    train_mnist_by_subclassing()
+    # train_mnist_by_subclassing()
+    test_image()
     print("Eixt main")
