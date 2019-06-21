@@ -12,9 +12,10 @@ from segmentation_models.losses import bce_jaccard_loss
 from segmentation_models.metrics import iou_score
 
 from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import ModelCheckpoint
 
 import os
-def get_data(imgDir, maxNum=10):
+def get_data(imgDir, maxNum=10, valMaxNum=10):
 	img_path = imgDir + "/images"
 	mask_path = imgDir + "/mask"
 	img_files = [ f for f in os.listdir(img_path) if os.path.isfile(os.path.join(img_path,f)) ]
@@ -25,14 +26,16 @@ def get_data(imgDir, maxNum=10):
 	# exit(0)
 
 	train_data = []
-	mask_data = []
+	train_mask_data = []
+
+	val_data = []
+	val_mask_data = []
+
 	# ttt=np.array()
 	print("Start load images ...")
 	total_num = len(img_files)
 	for idx, fn in enumerate(img_files):
-		if idx > maxNum:
-			break
-		print("load progress = [", total_num, ",", idx, "]")
+		print("load progress = [", total_num, ",", idx, "]", end=" ")
 		img = cv2.imread(img_path + "/" + fn)
 		if img is None:
 			print("Can't imread: ", img_path + "/" + fn)
@@ -49,21 +52,30 @@ def get_data(imgDir, maxNum=10):
 
 		img = img.astype('float32')/255.0
 		mask = mask.astype('float32')
-
 		# print(mask.shape)
 		# cv2.imwrite("xx.png", mask)
 		# exit(0)
 
-		train_data.append(img)
-		mask_data.append(mask)
+		if idx < maxNum:
+			print("train")
+			train_data.append(img)
+			train_mask_data.append(mask)
+		elif idx < maxNum + valMaxNum:
+			print("validate")
+			val_data.append(img)
+			val_mask_data.append(mask)
+		else:
+			break
 
 	print("Load images finish")
-	return np.array([i for i in train_data]), np.array([i for i in mask_data])
+	all_train=(np.array([i for i in train_data]), np.array([i for i in train_mask_data]))
+	all_val=(np.array([i for i in val_data]), np.array([i for i in val_mask_data]))
+	return all_train, all_val
 
 def train_unet_mobilenetv2(saveModelFn, tensorboardPath):
 	# train_imgDir = "/home/xiping/mydisk2/imglib/my_imglib/coco/train2014_person"
 	train_imgDir = "/coco/train2014_person"
-	train_data, mask_data = get_data(train_imgDir, maxNum=10000)
+	(train_data, train_mask_data), (val_data, val_mask_data)=get_data(train_imgDir, maxNum=12000, valMaxNum=1000)
 
 	# print(train_data.shape)
 	# print(mask_data.shape)
@@ -75,7 +87,7 @@ def train_unet_mobilenetv2(saveModelFn, tensorboardPath):
 	BACKBONE = 'mobilenetv2'
 	# define model
 	model = Unet(BACKBONE, classes=1, 
-		input_shape=(None, None, 3),
+		input_shape=(224, 224, 3),	# specific inputsize for callback save model
 		activation='sigmoid', #sigmoid,softmax
 		encoder_weights='imagenet')
 
@@ -87,6 +99,10 @@ def train_unet_mobilenetv2(saveModelFn, tensorboardPath):
 	# model.compile('SGD', loss="bce_jaccard_loss", metrics=["iou_score"])
 	# model.compile('adam', loss="binary_crossentropy", metrics=["iou_score"])
 	
+	checkpointer = ModelCheckpoint(
+		filepath="weights.epoch={epoch:02d}-val_loss={val_loss:.2f}-val_iou_score={val_iou_score:.2f}.hdf5", 
+		verbose=1, save_best_only=True)
+
 	print("================================")
 	print("Start train...")
 	# fit model
@@ -94,11 +110,11 @@ def train_unet_mobilenetv2(saveModelFn, tensorboardPath):
 	# more about `fit_generator` here: https://keras.io/models/sequential/#fit_generator
 	model.fit(
 		x=train_data,
-		y=mask_data,
+		y=train_mask_data,
 		batch_size=32,
 		epochs=200,
-		# validation_data=(x_val, y_val),
-		callbacks=[TensorBoard(log_dir=tensorboardPath)]
+		validation_data=(val_data, val_mask_data),# callback save middle model need input val data
+		callbacks=[TensorBoard(log_dir=tensorboardPath), checkpointer]
 	)
 
 	model.save(saveModelFn)
@@ -117,13 +133,15 @@ def test_image(saveModelFn):
 
 	print("-------------start read data")
 	train_imgDir = "/coco/train2014_person"
-	train_data, mask_data = get_data(train_imgDir, maxNum=10)
+	(train_data, mask_data), (val_data, val_mask_data)=get_data(train_imgDir, maxNum=10)
 
 	print("-------------start predict")
 	pmask=model.predict(train_data[:1])
 
 	print("-------------start save result")
 	src=(train_data[:1]*255).reshape(224,224,3)
+	cv2.imwrite("test.png", src)
+
 	rmask=(mask_data[:1]*255).reshape(224,224,1)
 	cv2.imwrite("rmask.png", overlap_mask(src, rmask, 0.7))
 
@@ -134,6 +152,6 @@ def test_image(saveModelFn):
 if __name__ == '__main__':
 	tensorboardPath="./unet_mobilenetv2_tensorboard"
 	saveModelFn="person_segment_unet_moblienetv2.h5"
-	# train_unet_mobilenetv2(saveModelFn, tensorboardPath)
+	train_unet_mobilenetv2(saveModelFn, tensorboardPath)
 	saveModelFn="./bk.h5"
-	test_image(saveModelFn)
+	# test_image(saveModelFn)

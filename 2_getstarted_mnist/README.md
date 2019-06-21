@@ -18,6 +18,11 @@ Step 3: Run tensorboard --logdir="full_path of log_path", show as follow    <br>
 
 Step 4: In your explore, input: http://hddl-xpwork:6006, if not show, modify to: localhost:6006 <br>
 
+**Callback Save middle model**
+Call back save middle model, need 2 requirements: <br>
+    1. set input shape  <br>
+    2. set validate data when training. <br>
+
 #### Slim method classify
     
     https://github.com/tensorflow/models/tree/master/research/slim
