@@ -261,7 +261,7 @@ def test_image():
         cv2.imwrite(fn, train_data[i]*255)
         img = cv2.imread(fn, 0)
         rsz = cv2.resize(img, (28,28));
-        rsz = rsz.reshape(28,28,1)/255.0
+        rsz = rsz.reshape(28,28,1)/255.0 # predic input dim = 4
         rsz = rsz.reshape(1,28,28,1)
 
         # print(rsz.shape)

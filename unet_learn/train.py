@@ -14,7 +14,7 @@ from segmentation_models.metrics import iou_score
 from tensorflow.keras.callbacks import TensorBoard
 
 import os
-def get_data(imgDir):
+def get_data(imgDir, maxNum=10):
 	img_path = imgDir + "/images"
 	mask_path = imgDir + "/mask"
 	img_files = [ f for f in os.listdir(img_path) if os.path.isfile(os.path.join(img_path,f)) ]
@@ -30,7 +30,7 @@ def get_data(imgDir):
 	print("Start load images ...")
 	total_num = len(img_files)
 	for idx, fn in enumerate(img_files):
-		if idx > 2000:
+		if idx > maxNum:
 			break
 		print("load progress = [", total_num, ",", idx, "]")
 		img = cv2.imread(img_path + "/" + fn)
@@ -60,10 +60,10 @@ def get_data(imgDir):
 	print("Load images finish")
 	return np.array([i for i in train_data]), np.array([i for i in mask_data])
 
-def main():
+def train_unet_mobilenetv2(saveModelFn, tensorboardPath):
 	# train_imgDir = "/home/xiping/mydisk2/imglib/my_imglib/coco/train2014_person"
 	train_imgDir = "/coco/train2014_person"
-	train_data, mask_data = get_data(train_imgDir)
+	train_data, mask_data = get_data(train_imgDir, maxNum=10000)
 
 	# print(train_data.shape)
 	# print(mask_data.shape)
@@ -79,7 +79,8 @@ def main():
 		activation='sigmoid', #sigmoid,softmax
 		encoder_weights='imagenet')
 
-	model.summary()
+	# Show network structure.
+	# model.summary()
 
 	model.compile('Adam', loss='jaccard_loss', metrics=['iou_score'])
 	# model.compile('SGD', loss="bce_dice_loss", metrics=["dice_score"])
@@ -97,11 +98,42 @@ def main():
 		batch_size=32,
 		epochs=200,
 		# validation_data=(x_val, y_val),
-		callbacks=[TensorBoard(log_dir="./unet_mobilenetv2_tensorboard")]
+		callbacks=[TensorBoard(log_dir=tensorboardPath)]
 	)
 
-	model.save("person_segment_unet_moblienetv2.h5")
-    # new_model=tf.keras.models.load_model("person_segment_unet_moblienetv2.h5")
+	model.save(saveModelFn)
+
+def overlap_mask(src, mask, alpha=0.6):
+	m=cv2.cvtColor(mask,cv2.COLOR_GRAY2BGR)
+	return cv2.addWeighted(src, alpha, m, 1-alpha, 0)
+
+import keras
+def test_image(saveModelFn):
+	print("-------------start load_model")
+	model=keras.models.load_model(saveModelFn)
+
+	print("-------------start compile")
+	model.compile('Adam', loss='jaccard_loss', metrics=['iou_score'])
+
+	print("-------------start read data")
+	train_imgDir = "/coco/train2014_person"
+	train_data, mask_data = get_data(train_imgDir, maxNum=10)
+
+	print("-------------start predict")
+	pmask=model.predict(train_data[:1])
+
+	print("-------------start save result")
+	src=(train_data[:1]*255).reshape(224,224,3)
+	rmask=(mask_data[:1]*255).reshape(224,224,1)
+	cv2.imwrite("rmask.png", overlap_mask(src, rmask, 0.7))
+
+	pmask=(pmask*255).reshape(224,224,1)
+	cv2.imwrite("pmask.png", overlap_mask(src, pmask, 0.7))
+	print("test_image finish")
 
 if __name__ == '__main__':
-	main()
+	tensorboardPath="./unet_mobilenetv2_tensorboard"
+	saveModelFn="person_segment_unet_moblienetv2.h5"
+	# train_unet_mobilenetv2(saveModelFn, tensorboardPath)
+	saveModelFn="./bk.h5"
+	test_image(saveModelFn)
