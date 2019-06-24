@@ -141,6 +141,92 @@ def load_whole_model(model_name):
     new_model=tf.keras.models.load_model(model_name+".h5")
     return new_model;
 
+# save keras model to pd
+# =====================================================================================
+from tensorflow.keras import backend as K
+def freeze_session(session, keep_var_names=None, output_names=None, clear_devices=True):
+    """
+    Freezes the state of a session into a pruned computation graph.
+
+    Creates a new computation graph where variable nodes are replaced by
+    constants taking their current value in the session. The new graph will be
+    pruned so subgraphs that are not necessary to compute the requested
+    outputs are removed.
+    @param session The TensorFlow session to be frozen.
+    @param keep_var_names A list of variable names that should not be frozen,
+                          or None to freeze all the variables in the graph.
+    @param output_names Names of the relevant graph outputs.
+    @param clear_devices Remove the device directives from the graph for better portability.
+    @return The frozen graph definition.
+    """
+    from tensorflow.python.framework.graph_util import convert_variables_to_constants
+    graph = session.graph
+    with graph.as_default():
+        freeze_var_names = list(set(v.op.name for v in tf.global_variables()).difference(keep_var_names or []))
+        output_names = output_names or []
+        output_names += [v.op.name for v in tf.global_variables()]
+        # Graph -> GraphDef ProtoBuf
+        input_graph_def = graph.as_graph_def()
+        if clear_devices:
+            for node in input_graph_def.node:
+                node.device = ""
+        frozen_graph = convert_variables_to_constants(session, input_graph_def,
+            output_names, freeze_var_names)
+        return frozen_graph
+def save_pd(model, svpath, svfn):
+    frozen_graph = freeze_session(K.get_session(),
+        output_names=[out.op.name for out in model.outputs])    
+    tf.train.write_graph(frozen_graph, svpath, svfn, as_text=False)
+
+import os
+def test_pd_model():
+    print("Test pd model")
+    svpath = "model_pb"
+    svfn = "lenet.pd"
+    model_name = os.path.join(svpath, svfn)
+
+    from tensorflow.python.platform import gfile
+
+    f = gfile.FastGFile(model_name, 'rb')
+    graph_def = tf.GraphDef()
+    # Parses a serialized binary message into the current message.
+    graph_def.ParseFromString(f.read())
+    f.close()
+
+    print("==xxx=====================================")
+    with tf.Session() as sess:
+        sess.graph.as_default()
+        tf.import_graph_def(graph_def)
+        op = sess.graph.get_operations()
+        print(op)
+        for m in op:
+            print("=========", m.values())
+    print("==bbb=====================================")
+
+    with tf.Session() as sess:
+        sess.graph.as_default()
+        # Import a serialized TensorFlow `GraphDef` protocol buffer
+        # and place into the current default `Graph`.
+        tf.import_graph_def(graph_def)
+
+        # print(graph_def)
+
+        (train_data, train_labels), (test_data, test_labels) = download_mnist()
+        fn="test1.png"
+        cv2.imwrite(fn, train_data[0]*255)
+        img = cv2.imread(fn, 0)
+        rsz = cv2.resize(img, (28,28));
+        rsz = rsz.reshape(28,28,1)/255.0 # predic input dim = 4
+        rsz = rsz.reshape(1,28,28,1)
+
+        softmax_tensor = sess.graph.get_tensor_by_name('import/dense_3/bias:0')
+        # predictions = sess.run(softmax_tensor, {'import/conv2d_1_input:0': x_test[:20]})
+        #https://stackoverflow.com/questions/45466020/how-to-export-keras-h5-to-tensorflow-pb
+        predictions = sess.run(softmax_tensor, {'import/input_1:0': rsz})
+        
+        print("real label =", np.argmax(train_labels[0]), end=' ')
+        print(np.argmax(predictions))
+
 # Train way1: sequential
 def train_sequential_model():
     print("start test classify mnist")
@@ -239,6 +325,11 @@ def train_mnist_by_subclassing():
     print('*2****rslt =', rslt)
     print("Train finish")
 
+    print("save_pd")
+    print("====================================")
+    save_pd(model, "model_pb", "lenet.pd")
+
+
 import cv2
 def test_image():
     new_model=MyLenet()
@@ -276,5 +367,7 @@ if __name__ == "__main__":
 
     # train_sequential_model()
     # train_mnist_by_subclassing()
-    test_image()
+    # test_image()
+    
+    test_pd_model()
     print("Eixt main")
