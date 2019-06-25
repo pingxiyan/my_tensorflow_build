@@ -106,6 +106,9 @@ bool CCallIR::loadIR(const std::string& irXml, const std::string& irBin) {
 		inputH = network.getInputsInfo().begin()->second->getTensorDesc().getDims()[2];
 		inputC = network.getInputsInfo().begin()->second->getTensorDesc().getDims()[1];
 
+		inputW=inputH=28;
+		inputC=1;
+		
 		std::cout << "inputWidth = " << inputW << std::endl;
 		std::cout << "inputHeight = " << inputH << std::endl;
 		std::cout << "inputC = " << inputC << std::endl;
@@ -118,13 +121,16 @@ bool CCallIR::loadIR(const std::string& irXml, const std::string& irBin) {
 		setOutputInfo();
 
 		// 4. Loading model to the plugin
+		std::cout << "load network" << std::endl;
 		executableNetwork = plugin.LoadNetwork(network, { });
 
 //#define REQUST_NUM 4
 //	for (int i = 0; i < REQUST_NUM; i++) {
 //		vecInferRequest.push_back(executableNetwork.CreateInferRequestPtr());
 //	}
+		std::cout << "CreateInferRequestPtr" << std::endl;
 		inferRequest = executableNetwork.CreateInferRequestPtr();
+		std::cout << "CreateInferRequestPtr finish " << std::endl;
 	} catch (const std::exception& error) {
 		std::cerr << "Catch exception: " << error.what() << std::endl;
 		return 1;
@@ -143,7 +149,8 @@ void CCallIR::setInputInfo() {
 
 	InputInfo::Ptr& input = inputInfo.begin()->second;
 	input->setPrecision(Precision::U8);
-	input->getInputData()->setLayout(Layout::NCHW);
+	// input->getInputData()->setLayout(Layout::NCHW);
+	input->getInputData()->setLayout(Layout::NHWC);
 }
 
 void CCallIR::setOutputInfo() {
@@ -157,7 +164,7 @@ void CCallIR::setOutputInfo() {
 	std::cout << "last layer name = " << lastLayerName << std::endl;
 
 	output->setPrecision(Precision::FP32);
-	output->setLayout(Layout::NCHW);
+	// output->setLayout(Layout::NCHW);
 }
 
 void CCallIR::putImg2InputBlob(const cv::Mat& img, InferRequest::Ptr request) {
