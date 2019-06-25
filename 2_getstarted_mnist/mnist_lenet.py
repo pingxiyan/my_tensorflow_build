@@ -193,15 +193,15 @@ def test_pd_model():
     graph_def.ParseFromString(f.read())
     f.close()
 
-    print("==xxx=====================================")
+    print("Print all layers, where we can find input and output layers")
+    print("=======================================")
     with tf.Session() as sess:
-        sess.graph.as_default()
+        # sess.graph.as_default()
         tf.import_graph_def(graph_def)
         op = sess.graph.get_operations()
-        print(op)
-        for m in op:
-            print("=========", m.values())
-    print("==bbb=====================================")
+        for idx, m in enumerate(op):
+            print("layer", idx, "=", m.values())
+    print("=======================================")
 
     with tf.Session() as sess:
         sess.graph.as_default()
@@ -219,13 +219,16 @@ def test_pd_model():
         rsz = rsz.reshape(28,28,1)/255.0 # predic input dim = 4
         rsz = rsz.reshape(1,28,28,1)
 
-        softmax_tensor = sess.graph.get_tensor_by_name('import/dense_3/bias:0')
+        # I don't know how to get real name of input and output
+        softmax_tensor = sess.graph.get_tensor_by_name('import/dense_1/Softmax:0')
         # predictions = sess.run(softmax_tensor, {'import/conv2d_1_input:0': x_test[:20]})
         #https://stackoverflow.com/questions/45466020/how-to-export-keras-h5-to-tensorflow-pb
         predictions = sess.run(softmax_tensor, {'import/input_1:0': rsz})
         
-        print("real label =", np.argmax(train_labels[0]), end=' ')
-        print(np.argmax(predictions))
+        print(predictions)
+
+        print("real label =", np.argmax(train_labels[0]))
+        print("pridect label =", np.argmax(predictions))
 
 # Train way1: sequential
 def train_sequential_model():
@@ -321,7 +324,7 @@ def train_mnist_by_subclassing():
                   metrics=['accuracy'])
     new_model.fit(train_data[:1], train_labels[:1])
     new_model.load_weights(model_name)
-    rslt = model.evaluate(test_data, test_labels, batch_size=32)
+    rslt = new_model.evaluate(test_data, test_labels, batch_size=32)
     print('*2****rslt =', rslt)
     print("Train finish")
 
