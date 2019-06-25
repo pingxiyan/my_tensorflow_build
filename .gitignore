@@ -12,4 +12,4 @@ example/classify_image_inceptionv3/classify_cpp_eclipse
 2_getstarted_mnist/my_sequential_model.json
 2_getstarted_mnist/my_subclassing_model.h5
 2_getstarted_mnist/my_whole_model.h5
-
+2_getstarted_mnist/test_cpp/build
