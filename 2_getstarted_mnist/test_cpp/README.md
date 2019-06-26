@@ -7,9 +7,9 @@ cvt_to_ir.sh: Convert pd model to INTEL OpenVINO IR. <br>
 
 # Requirements
 
-1.OpenVINO.
-2.OpenCV.
-3.Ubuntu, maybe windows is ok(not verify).
+1.OpenVINO.    <br>
+2.OpenCV.    <br>
+3.Ubuntu, maybe windows is ok(not verify).    <br>
 
 # BUILD and run
 
