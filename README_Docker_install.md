@@ -98,6 +98,7 @@ Learn tensorflow, recommand refer: /tensorflow_learn/example/mnist/keras_method/
 	# Start GPU version
 	$ docker run --rm --runtime=nvidia --network host -v [local path]:[docker path] -it tensorflow/tensorflow bash
 	$ docker run --rm --network host --runtime=nvidia -it -v ~/mydisk2/mygithub/tensorflow_learn:/tensorflow_learn [container] bash
+	$ docker run --rm --network host --runtime=nvidia -it -v ~/mydisk2/mygithub/tensorflow_learn:/tensorflow_learn -v /home/xiping/mydisk2/imglib/my_imglib/coco:/coco tensorflow/tensorflow_gpu_py3_1_12_0 bash 
 
 	Some parameters
 	--rm: stop and exit, rm container
